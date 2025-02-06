@@ -9,11 +9,12 @@ export const authenticateToken = (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+):void => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(400).json({ message: "Authorization Header not found" });
+    res.status(400).json({ message: "Authorization Header not found" });
+    return;
   }
 
   const token = authHeader.split(" ")[1];
@@ -22,10 +23,11 @@ export const authenticateToken = (
 
   jwt.verify(token, secretKey, (err, user) => {
     if (err) {
-      return res.status(401).json({ message: "invalid token" }); //Unauthorized
+    res.status(401).json({ message: "invalid token" }); //Unauthorized
+    return;
     }
 
     req.user = user as JwtPayload;
-    return next();
+    next();
   });
 };
